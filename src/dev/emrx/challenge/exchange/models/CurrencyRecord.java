@@ -11,6 +11,11 @@ public record CurrencyRecord(
     double rate,
     String exchangeProvider) {
 
+    public String showTransaction() {
+        return "El valor %.2f [%s] corresponde al valor final de =>>> %.2f [%s] de la casa de cambio \'%s\' "
+                .formatted(baseValue(), currencyPair().baseCode(), targetValue(), currencyPair().targetCode(), exchangeProvider());
+    }
+
     @Override
     public String toString() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");

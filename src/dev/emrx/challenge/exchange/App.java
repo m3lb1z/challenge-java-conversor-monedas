@@ -1,5 +1,6 @@
 package dev.emrx.challenge.exchange;
 
+import dev.emrx.challenge.exchange.business.Menu;
 import dev.emrx.challenge.exchange.calcule.CurrencyExchangeCalculator;
 import dev.emrx.challenge.exchange.models.CurrencyRecord;
 import dev.emrx.challenge.exchange.models.CurrencyPair;
@@ -12,33 +13,36 @@ public class App {
     public static int OPERATION_EXIT = 9;
     public static void main(String[] args) {
         Scanner keyboard = new Scanner(System.in);
-        int operation = -1;
+        Menu menu = new Menu();
+        boolean operation = true;
 
-        while (operation != OPERATION_EXIT) {
-            menu();
-            operation = keyboard.nextInt();
-            if(operation == OPERATION_EXIT) continue;
-
-            if(operation >= 1 && operation <= 6) {
-                System.out.println("Escriba el valor que deseas convertir: ");
-                double baseValue = keyboard.nextDouble();
-                CurrencyPair currencyPair = processOperationExchange(operation);
-                calculator.processExchangeRate(baseValue, currencyPair);
-                CurrencyRecord current = calculator.getLastCurrencyExchangeRate();
-
-                System.out.println(
-                        "El valor %.2f [%s] corresponde al valor final de =>>> %.2f [%s] de la casa de cambio \'%s\' "
-                                .formatted(current.baseValue(),
-                                        current.currencyPair().baseCode(),
-                                        current.targetValue(),
-                                        current.currencyPair().targetCode(),
-                                        current.exchangeProvider())
-                );
-            } else if(operation == 7) {
-                calculator.showTransactionHistory();
-            } else {
-                System.out.println("Configurares");
-            }
+        while (operation) {
+//            menu();
+//            operation = keyboard.nextInt();
+//            if(operation == OPERATION_EXIT) continue;
+//
+//            if(operation >= 1 && operation <= 6) {
+//                System.out.println("Escriba el valor que deseas convertir: ");
+//                double baseValue = keyboard.nextDouble();
+//                CurrencyPair currencyPair = processOperationExchange(operation);
+//                calculator.processExchangeRate(baseValue, currencyPair);
+//                CurrencyRecord current = calculator.getLastCurrencyExchangeRate();
+//
+//                System.out.println(
+//                        "El valor %.2f [%s] corresponde al valor final de =>>> %.2f [%s] de la casa de cambio \'%s\' "
+//                                .formatted(current.baseValue(),
+//                                        current.currencyPair().baseCode(),
+//                                        current.targetValue(),
+//                                        current.currencyPair().targetCode(),
+//                                        current.exchangeProvider())
+//                );
+//            } else if(operation == 7) {
+//                calculator.showTransactionHistory();
+//            } else {
+//                System.out.println("Configurares");
+//            }
+            menu.showMenu();
+            operation = menu.proccesOperation(keyboard);
         }
         System.out.println("Finalizo: el programa de Conversor de Moneda");
     }
@@ -81,20 +85,6 @@ public class App {
             4) Real brasileño =>> Dólar
             5) Dólar =>> Peso colombiano
             6) Peso colombinao =>> Dólar
-            7) Historial
-            8) Configuraciones
-            9) Salir
-            Elija una opción válida:
-            *******************************************************************
-            """);
-    }
-    public static void menuAdvanced() {
-        System.out.println("""
-            
-            *******************************************************************
-            Sea bienvenido/a al Conversor de Moneda =]
-            
-            1) Cambiar divisas
             7) Historial
             8) Configuraciones
             9) Salir

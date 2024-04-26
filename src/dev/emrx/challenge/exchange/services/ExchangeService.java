@@ -4,4 +4,5 @@ public interface ExchangeService {
 
     RateResponse getExchangeRate(String baseCurrency, String targetCurrency);
 
+
 }

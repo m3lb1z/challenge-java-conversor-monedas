@@ -23,6 +23,11 @@ public class CurrencyExchangeCalculator {
         providers.add(new CurrencyBeaconAPI("oKC1gPIFWxy5FZFX0NUEm5Q8c0Sq4paI"));
     }
 
+    public CurrencyExchangeCalculator(List<ExchangeService> providers) {
+        exchangeHistory = new ArrayList<>();
+        this.providers = providers;
+    }
+
     public RateResponse findBestRate(CurrencyPair currencyPair) {
         String bestExchangeProvider = "";
         double bestRate = Double.MIN_VALUE;
