@@ -1,85 +1,73 @@
 package dev.emrx.challenge.exchange;
 
-import dev.emrx.challenge.exchange.calcule.CurrencyCalculator;
-import dev.emrx.challenge.exchange.models.CurrencyConversion;
-import dev.emrx.challenge.exchange.models.CurrencyType;
-import dev.emrx.challenge.exchange.services.ExchangeRateAPI;
+import dev.emrx.challenge.exchange.calcule.CurrencyExchangeCalculator;
+import dev.emrx.challenge.exchange.models.CurrencyRecord;
+import dev.emrx.challenge.exchange.models.CurrencyPair;
 
 import java.util.Scanner;
 
 public class App {
 
-    public static final String TOKEN_API = "619a9a9fe75fc8fea3073e51";
+    public static CurrencyExchangeCalculator calculator = new CurrencyExchangeCalculator();
+    public static int OPERATION_EXIT = 9;
     public static void main(String[] args) {
         Scanner keyboard = new Scanner(System.in);
-        CurrencyCalculator calculator = new CurrencyCalculator();
         int operation = -1;
-        double baseValue = 0.0;
 
-        while (operation != 7) {
+        while (operation != OPERATION_EXIT) {
             menu();
             operation = keyboard.nextInt();
-            if(operation == 7) continue;
+            if(operation == OPERATION_EXIT) continue;
 
-            System.out.println("Escriba el valor que deseas convertir: ");
-            baseValue = keyboard.nextDouble();
+            if(operation >= 1 && operation <= 6) {
+                System.out.println("Escriba el valor que deseas convertir: ");
+                double baseValue = keyboard.nextDouble();
+                CurrencyPair currencyPair = processOperationExchange(operation);
+                calculator.processExchangeRate(baseValue, currencyPair);
+                CurrencyRecord current = calculator.getLastCurrencyExchangeRate();
 
-            if(processOperation(calculator, operation, baseValue)) {
-                CurrencyConversion current = calculator.getLastCurrencyExchangeRate();
                 System.out.println(
-                    "El valor %.2f [%s] corresponde al valor final de =>>> %.2f [%s]"
-                    .formatted(current.baseValue(),
-                                current.baseCurrency(),
-                                current.targetValue(),
-                                current.targetCurrency())
+                        "El valor %.2f [%s] corresponde al valor final de =>>> %.2f [%s] de la casa de cambio \'%s\' "
+                                .formatted(current.baseValue(),
+                                        current.currencyPair().baseCode(),
+                                        current.targetValue(),
+                                        current.currencyPair().targetCode(),
+                                        current.exchangeProvider())
                 );
-                System.out.println("\nHistorial de Conversor de Moneda");
-                calculator.getExchangeHistory().forEach(System.out::println);
+            } else if(operation == 7) {
+                calculator.showTransactionHistory();
+            } else {
+                System.out.println("Configurares");
             }
         }
         System.out.println("Finalizo: el programa de Conversor de Moneda");
     }
 
-    public static boolean processOperation(CurrencyCalculator calculator, int operation, double baseValue) {
-        ExchangeRateAPI exchange = new ExchangeRateAPI(TOKEN_API);
-        CurrencyType baseCurrency = CurrencyType.USD;
-        CurrencyType targetCurrency = CurrencyType.USD;
+    public static CurrencyPair processOperationExchange(int operation) {
+        CurrencyPair current = new CurrencyPair("USD", "USD");
 
         switch (operation) {
             case 1:
-                baseCurrency = CurrencyType.USD;
-                targetCurrency = CurrencyType.ARS;
+                current = new CurrencyPair("USD", "ARS");
                 break;
             case 2:
-                baseCurrency = CurrencyType.ARS;
-                targetCurrency = CurrencyType.USD;
+                current = new CurrencyPair("ARS", "USD");
                 break;
             case 3:
-                baseCurrency = CurrencyType.USD;
-                targetCurrency = CurrencyType.BRL;
+                current = new CurrencyPair("USD", "BRL");
                 break;
             case 4:
-                baseCurrency = CurrencyType.BRL;
-                targetCurrency = CurrencyType.USD;
+                current = new CurrencyPair("BRL", "USD");
                 break;
             case 5:
-                baseCurrency = CurrencyType.USD;
-                targetCurrency = CurrencyType.COP;
+                current = new CurrencyPair("USD", "COP");
                 break;
             case 6:
-                baseCurrency = CurrencyType.COP;
-                targetCurrency = CurrencyType.USD;
+                current = new CurrencyPair("COP", "USD");
                 break;
-            default:
-                return false;
         }
 
-        calculator.calculeCurrencyExchangeRate(
-                baseCurrency,
-                baseValue,
-                targetCurrency,
-                exchange.obtainCurrencyRate(baseCurrency.name(), targetCurrency.name()));
-        return true;
+        return current;
     }
     public static void menu() {
         System.out.println("""
@@ -93,7 +81,23 @@ public class App {
             4) Real brasileño =>> Dólar
             5) Dólar =>> Peso colombiano
             6) Peso colombinao =>> Dólar
-            7) Salir
+            7) Historial
+            8) Configuraciones
+            9) Salir
+            Elija una opción válida:
+            *******************************************************************
+            """);
+    }
+    public static void menuAdvanced() {
+        System.out.println("""
+            
+            *******************************************************************
+            Sea bienvenido/a al Conversor de Moneda =]
+            
+            1) Cambiar divisas
+            7) Historial
+            8) Configuraciones
+            9) Salir
             Elija una opción válida:
             *******************************************************************
             """);

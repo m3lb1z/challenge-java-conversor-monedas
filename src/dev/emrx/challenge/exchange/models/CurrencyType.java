@@ -1,9 +1,6 @@
 package dev.emrx.challenge.exchange.models;
 
-public enum CurrencyType {
-    USD,
-    ARS,
-    BRL,
-    COP,
-    PEN
+public record CurrencyType(
+    String code,
+    String name) {
 }

@@ -1,25 +1,30 @@
 package dev.emrx.challenge.exchange.services;
 
 import com.google.gson.Gson;
-import dev.emrx.challenge.exchange.services.dto.ERPairConversion;
+import dev.emrx.challenge.exchange.services.dto.CBPairConversion;
 
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
-public class ExchangeRateAPI implements ExchangeService {
+public class CurrencyBeaconAPI implements ExchangeService {
 
-    public static final String ENTRY_POINT = "https://v6.exchangerate-api.com/v6/";
+    public static final String ENTRY_POINT = "https://api.currencybeacon.com/v1/";
     private String tokenAPI;
 
-    public ExchangeRateAPI(String tokenAPI) {
+    public CurrencyBeaconAPI(String tokenAPI) {
         this.tokenAPI = tokenAPI;
     }
 
     @Override
     public RateResponse getExchangeRate(String baseCurrency, String targetCurrency) {
-        URI uriExchangeRateAPI = URI.create(ENTRY_POINT + tokenAPI + "/pair/" + baseCurrency + "/" + targetCurrency);
+        URI uriExchangeRateAPI =
+                URI.create(ENTRY_POINT
+                        + "convert?from=" + baseCurrency
+                        + "&to=" + targetCurrency
+                        + "&amount=1"
+                        + "&api_key=" + tokenAPI);
 
         HttpClient cliente = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
@@ -28,11 +33,10 @@ public class ExchangeRateAPI implements ExchangeService {
         try {
             HttpResponse<String> response = cliente.send(request, HttpResponse.BodyHandlers.ofString());
             Gson gson = new Gson();
-            ERPairConversion result = gson.fromJson(response.body(), ERPairConversion.class);
-            return new RateResponse("Exchange Rate", result.conversion_rate());
+            CBPairConversion result = gson.fromJson(response.body(), CBPairConversion.class);
+            return new RateResponse("Currency Beacon", result.value());
         } catch (Exception e) {
             throw new RuntimeException("No se encontro la divisa.");
         }
     }
-
 }
